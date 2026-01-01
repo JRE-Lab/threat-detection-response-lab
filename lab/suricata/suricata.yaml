@@ -1,0 +1,47 @@
+diff --git a/lab/suricata/suricata.yaml b/lab/suricata/suricata.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..a66e10f1f1c4ebee9da385464e7574322f3641f2
+--- /dev/null
++++ b/lab/suricata/suricata.yaml
+@@ -0,0 +1,41 @@
++%YAML 1.1
++---
++vars:
++  address-groups:
++    HOME_NET: "[127.0.0.1/32]"
++    EXTERNAL_NET: "!$HOME_NET"
++  port-groups:
++    HTTP_PORTS: "80,8080"
++
++logging:
++  default-log-level: info
++
++default-rule-path: /var/lib/suricata/rules
++rule-files:
++  - local.rules
++
++outputs:
++  - eve-log:
++      enabled: yes
++      filetype: regular
++      filename: /var/log/suricata/eve.json
++      types:
++        - alert:
++            payload: yes
++            metadata: yes
++        - http
++        - dns
++        - flow
++        - stats
++
++app-layer:
++  protocols:
++    http:
++      enabled: yes
++    dns:
++      enabled: yes
++
++pcap:
++  - interface: lo
++
++checksum-validation: no
