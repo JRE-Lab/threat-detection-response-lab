@@ -1,0 +1,24 @@
+diff --git a/lab/suricata/rules/local.rules b/lab/suricata/rules/local.rules
+new file mode 100644
+index 0000000000000000000000000000000000000000..3137270dd9183297d78fc8025f5510b994095a4b
+--- /dev/null
++++ b/lab/suricata/rules/local.rules
+@@ -0,0 +1,18 @@
++alert http any any -> $HOME_NET $HTTP_PORTS (
++  msg:"TDR LAB Suspicious admin page probe";
++  flow:to_server,established;
++  http.method; content:"GET";
++  http.uri; content:"/admin"; nocase;
++  classtype:web-application-attack;
++  sid:9000001;
++  rev:1;
++)
++
++alert http any any -> $HOME_NET $HTTP_PORTS (
++  msg:"TDR LAB Suspicious user agent";
++  flow:to_server,established;
++  http.user_agent; content:"sqlmap"; nocase;
++  classtype:web-application-attack;
++  sid:9000002;
++  rev:1;
++)
