@@ -1,0 +1,47 @@
+diff --git a/docker-compose.yml b/docker-compose.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..aa8b1f20359d0f70891325237047079924dfb2f7
+--- /dev/null
++++ b/docker-compose.yml
+@@ -0,0 +1,41 @@
++version: "3.8"
++
++services:
++  suricata:
++    image: oisf/suricata:latest
++    container_name: tdr-suricata
++    network_mode: host
++    cap_add:
++      - net_admin
++      - net_raw
++    volumes:
++      - ./lab/suricata/suricata.yaml:/etc/suricata/suricata.yaml:ro
++      - ./lab/suricata/rules:/var/lib/suricata/rules:ro
++      - ./lab/data/suricata:/var/log/suricata
++    command: [
++      "-c", "/etc/suricata/suricata.yaml",
++      "-i", "lo",
++      "-l", "/var/log/suricata"
++    ]
++
++  splunk:
++    image: splunk/splunk:latest
++    container_name: tdr-splunk
++    environment:
++      - SPLUNK_START_ARGS=--accept-license
++      - SPLUNK_PASSWORD=ChangeMe123!
++      - SPLUNK_HEC_TOKEN=suricata-lab-token
++      - SPLUNK_ENABLE_HEC=true
++      - SPLUNK_HTTP_ENABLESSL=false
++    ports:
++      - "8000:8000"
++      - "8088:8088"
++    volumes:
++      - ./lab/splunk/local_suricata:/opt/splunk/etc/apps/local_suricata:ro
++      - ./lab/data/suricata:/data/suricata:ro
++
++  victim:
++    image: nginx:stable
++    container_name: tdr-victim
++    ports:
++      - "8080:80"
